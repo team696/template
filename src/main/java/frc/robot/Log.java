@@ -65,6 +65,8 @@ public final class Log {
 	}
 
 	public static <T> void value(String name, T value) {
+		if (severity.level > Log.severity.level)
+			return;
 		value(name, value, SEVERITY.DEBUG);
 	}
 
