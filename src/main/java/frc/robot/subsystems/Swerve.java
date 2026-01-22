@@ -17,6 +17,8 @@ import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.LimeLightCam;
@@ -28,7 +30,8 @@ import frc.robot.TunerConstants.TunerSwerveDrivetrain;
 public final class Swerve extends TunerSwerveDrivetrain implements Subsystem, Sendable {
 	private static Swerve m_Swerve;
 
-	LimeLightCam exampleCamera = new LimeLightCam("Front Camera");
+	LimeLightCam exampleCamera = new LimeLightCam("limelight-front");
+	Field2d fieldSim = new Field2d();	
 
 	public static synchronized Swerve get() {
 		if (m_Swerve == null)
@@ -47,6 +50,8 @@ public final class Swerve extends TunerSwerveDrivetrain implements Subsystem, Se
 	@Override
 	public void periodic() {
 		exampleCamera.addVisionEstimate(this::addVisionMeasurement, this::acceptEstimate);
+		fieldSim.setRobotPose(this.getState().Pose);	
+		SmartDashboard.putData("field", fieldSim);
 	}
 
 	// Untested Code, Not Meant to Actually be used, just an example.
