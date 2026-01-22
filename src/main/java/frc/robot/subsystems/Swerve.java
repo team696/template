@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.LimeLightCam;
+import frc.robot.LimelightHelpers;
 import frc.robot.TunerConstants;
 import frc.robot.BaseCam.AprilTagResult;
 import frc.robot.BaseCam.measurementTrust;
@@ -31,7 +32,7 @@ public final class Swerve extends TunerSwerveDrivetrain implements Subsystem, Se
 	private static Swerve m_Swerve;
 
 	LimeLightCam exampleCamera = new LimeLightCam("limelight-front");
-	Field2d fieldSim = new Field2d();	
+	public Field2d fieldSim = new Field2d();
 
 	public static synchronized Swerve get() {
 		if (m_Swerve == null)
@@ -50,7 +51,7 @@ public final class Swerve extends TunerSwerveDrivetrain implements Subsystem, Se
 	@Override
 	public void periodic() {
 		exampleCamera.addVisionEstimate(this::addVisionMeasurement, this::acceptEstimate);
-		fieldSim.setRobotPose(this.getState().Pose);	
+		fieldSim.setRobotPose(this.getState().Pose);
 		SmartDashboard.putData("field", fieldSim);
 	}
 
@@ -59,14 +60,14 @@ public final class Swerve extends TunerSwerveDrivetrain implements Subsystem, Se
 		if (latestResult.distToTag > 4)
 			return false; // Disregard measurements if we are more than 4 meters away
 		if (this.getState().Speeds.omegaRadiansPerSecond > 2 * Math.PI)
-			return false; // Disregard measurement if we are spinning faster than 360 deg / second
+			return false; // Disregard measurement if we are spinning faster than 360 deg second
 
 		// Trust The measurement less the further we are
-		double stdDeviationCoefficient = latestResult.distToTag * latestResult.distToTag / 12 ;
+		double stdDeviationCoefficient = latestResult.distToTag *
+				latestResult.distToTag / 12;
 
 		stdDeviations.translation = .5 * stdDeviationCoefficient;
 		stdDeviations.rotation = .5 * stdDeviationCoefficient;
-
 		return true;
 	}
 
