@@ -4,12 +4,9 @@ name: CI
 # events but only for the main branch.
 on:
   push:
-    branches:
-      - ${{ github.event.repository.default_branch }}
-
+    branches: [ main, master, 2026 ]
   pull_request:
-    branches:
-      - ${{ github.event.repository.default_branch }}
+    branches: [ main, master, 2026 ]
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
