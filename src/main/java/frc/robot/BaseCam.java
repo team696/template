@@ -38,9 +38,18 @@ public abstract class BaseCam {
     }
   }
 
-  public abstract Optional<AprilTagResult> getEstimate();
+  public class measurementTrust {
+	public double translation = .7;
+	public double rotation = 2.;
 
-  Vector<N3> stdDeviations = VecBuilder.fill(0.7, 0.7, 2);
+	public Vector<N3> asStdDeviations() {
+		return VecBuilder.fill(translation, translation, rotation);
+	}
+  }
+
+  measurementTrust trust = new measurementTrust();
+
+  public abstract Optional<AprilTagResult> getEstimate();
 
   @FunctionalInterface
   public static interface addVisionEstimate {
@@ -49,7 +58,7 @@ public abstract class BaseCam {
 
   @FunctionalInterface
   public static interface acceptEstimate {
-    boolean test(AprilTagResult latestResult, Vector<N3> stdDeviations);
+    boolean test(AprilTagResult latestResult, final measurementTrust stdDeviations);
   }
 
   // eventually switch this to taking in a addVisionEstimate
@@ -59,7 +68,7 @@ public abstract class BaseCam {
     if (oEstimation.isPresent()) {
       AprilTagResult estimation = oEstimation.get();
       try {
-        if (!checkEstimation.test(estimation, stdDeviations)) {
+        if (!checkEstimation.test(estimation, trust)) {
           //BackupLogger.addToQueue("696/Vision/Rejected Pose", estimation.pose);
           return false;
         } else {
@@ -71,7 +80,7 @@ public abstract class BaseCam {
       addVisionMeasurement.accept(
           estimation.pose,
           estimation.time,
-          stdDeviations);
+          trust.asStdDeviations());
       return true;
     }
     return false;
